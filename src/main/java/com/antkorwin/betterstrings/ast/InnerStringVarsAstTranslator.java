@@ -42,7 +42,7 @@ public class InnerStringVarsAstTranslator extends TreeTranslator {
 	@Override
 	public void visitClassDef(JCTree.JCClassDecl jcClassDecl) {
 
-		doWithSkipResolving(() -> isAnnotatedBySkip(jcClassDecl.getModifiers()),
+		doWithSkipResolving(() -> skip || isAnnotatedBySkip(jcClassDecl.getModifiers()),
 		                    () -> super.visitClassDef(jcClassDecl));
 	}
 
@@ -56,14 +56,14 @@ public class InnerStringVarsAstTranslator extends TreeTranslator {
 	@Override
 	public void visitMethodDef(JCTree.JCMethodDecl jcMethodDecl) {
 
-		doWithSkipResolving(() -> isAnnotatedBySkip(jcMethodDecl.getModifiers()),
+		doWithSkipResolving(() -> skip || isAnnotatedBySkip(jcMethodDecl.getModifiers()),
 		                    () -> super.visitMethodDef(jcMethodDecl));
 	}
 
 	@Override
 	public void visitVarDef(JCTree.JCVariableDecl jcVariableDecl) {
 
-		doWithSkipResolving(() -> isAnnotatedBySkip(jcVariableDecl.getModifiers()),
+		doWithSkipResolving(() -> skip || isAnnotatedBySkip(jcVariableDecl.getModifiers()),
 		                    () -> super.visitVarDef(jcVariableDecl));
 	}
 
