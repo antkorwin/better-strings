@@ -70,7 +70,10 @@ public class InnerStringVarsAstTranslator extends TreeTranslator {
 	private boolean isAnnotatedBySkip(JCTree.JCModifiers modifiers) {
 
 		for (JCTree.JCAnnotation annotation : modifiers.getAnnotations()) {
-			if (annotation.type.toString().equals(DisabledStringInterpolation.class.getCanonicalName())) {
+			if (annotation.getAnnotationType() == null) {
+				continue;
+			}
+			if (annotation.getAnnotationType().toString().equals(DisabledStringInterpolation.class.getCanonicalName())) {
 				return true;
 			}
 		}

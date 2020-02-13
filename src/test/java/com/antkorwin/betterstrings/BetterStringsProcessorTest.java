@@ -158,6 +158,4 @@ class BetterStringsProcessorTest {
 			assertThat(result).isEqualTo("sum = ${3+4}");
 		}
 	}
-
-
 }
