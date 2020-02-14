@@ -1,0 +1,122 @@
+:sectnums:
+
+# Better Strings - Java String Interpolation
+
+image:https://travis-ci.com/antkorwin/better-strings.svg?branch=master["Build Status", link="https://travis-ci.com/antkorwin/better-strings"]
+image:https://codecov.io/gh/antkorwin/better-strings/branch/master/graph/badge.svg[link ="https://codecov.io/gh/antkorwin/better-strings"]
+
+The Java Plugin to use string interpolation for Java (like in Kotlin).
+Supports Java 8, 9, 10, 11, ...
+
+
+## Motivation
+
+
+
+In the latest JEPs https://openjdk.java.net/jeps/355, we have the only expectation of the RAW string literals,
+but there is nothing about the string interpolation.
+
+And it’s so sad, that we need writing code like this in the 2020 year:
+
+[source, java]
+----
+int a = 3;
+int b = 4;
+System.out.println(a + " + " + b + " = " + (a + b));
+----
+
+just to print the string: `3 + 4 = 7`
+
+
+of course, we can use a `var` since Java 10:
+
+[source, java]
+----
+var a = 3;
+var b = 4;
+System.out.println(a + " + " + b + " = " + (a + b));
+----
+
+But this code is still sad =(
+
+## What can we do with the Better Strings plugin?
+
+### Using variables in string literals:
+
+[source, java]
+----
+var a = 3;
+var b = 4;
+System.out.println("${a} + ${b} = ${a+b}");
+----
+
+### Using expressions:
+
+[source, java]
+----
+var a = 3;
+var b = 4;
+System.out.println("flag  = ${a > 5 ? true : false}");
+----
+
+[source, java]
+----
+var a = 3;
+System.out.println("pow2 = ${a * a}");
+----
+
+### Using functions:
+
+[source, java]
+----
+@Test
+void functionCall() {
+    System.out.println("fact(5) = ${factorial(5)}");
+}
+
+long factorial(int n) {
+    long fact = 1;
+    for (int i = 2; i <= n; i++) {
+        fact = fact * i;
+    }
+    return fact;
+}
+----
+
+
+## Getting started
+
+You need to add the following dependency:
+
+[source, xml]
+----
+<dependency>
+    <groupId>com.antkorwin</groupId>
+    <artifactId>better-strings</artifactId>
+    <version>0.1</version>
+</dependency>
+----
+
+And you can use string interpolation anywhere in your code.
+
+## How to turn-off string interpolation
+
+To skip the string interpolation for class, method or field you can use the `@DisabledStringInterpolation` annotation:
+
+[source, java]
+----
+@DisabledStringInterpolation
+class Foo {
+    void test() {
+        System.out.println("${a+b}");
+    }
+}
+----
+
+this code prints: `${a+b}`
+
+
+## How it works
+
+Better Strings is a Java Annotation Processor,
+but it does not process specific annotations, it makes AST modification of your code while javac compiling it.
