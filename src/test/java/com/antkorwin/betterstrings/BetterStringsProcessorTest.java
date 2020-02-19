@@ -74,7 +74,6 @@ class BetterStringsProcessorTest {
 		assertThat(result).isEqualTo("password = 1234");
 	}
 
-
 	@Nested
 	class DisabledAnnotationTests {
 

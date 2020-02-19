@@ -15,7 +15,8 @@ import com.sun.tools.javac.util.Names;
 /**
  * Created on 2019-09-10
  * <p>
- * TODO: replace on the JavaDoc
+ * AST translator to change the code of String literals
+ * on the code of java expressions.
  *
  * @author Korovin Anatoliy
  */

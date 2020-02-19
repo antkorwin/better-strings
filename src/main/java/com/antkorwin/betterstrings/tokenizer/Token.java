@@ -2,8 +2,9 @@ package com.antkorwin.betterstrings.tokenizer;
 
 /**
  * Created on 2019-09-11
- * <p>
- * TODO: replace on the JavaDoc
+ *
+ * internal type which used to split string
+ * literal with expressions on the list of tokens.
  *
  * @author Korovin Anatoliy
  */
