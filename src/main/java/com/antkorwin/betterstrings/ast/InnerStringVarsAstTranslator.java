@@ -73,7 +73,7 @@ public class InnerStringVarsAstTranslator extends TreeTranslator {
 			if (annotation.getAnnotationType() == null) {
 				continue;
 			}
-			if (annotation.getAnnotationType().toString().equals(DisabledStringInterpolation.class.getCanonicalName())) {
+			if (annotation.type.toString().equals(DisabledStringInterpolation.class.getCanonicalName())) {
 				return true;
 			}
 		}

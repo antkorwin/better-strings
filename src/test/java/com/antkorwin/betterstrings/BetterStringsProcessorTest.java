@@ -157,5 +157,30 @@ class BetterStringsProcessorTest {
 
 			assertThat(result).isEqualTo("sum = ${3+4}");
 		}
+
+		@Test
+		void importDisabledAnnotationAndCheckType() {
+			@Language("Java") String classCode = "import com.antkorwin.betterstrings.*;" +
+			                                     "" +
+			                                     "public class Test { " +
+			                                     "  public static String sum(){ " +
+			                                     "      return \"sum = ${new NestedClass().test()}\";" +
+			                                     "  } " +
+			                                     "  @DisabledStringInterpolation" +
+			                                     "  public static class NestedClass {" +
+			                                     "      public String test(){" +
+			                                     "          return \"${3+4}\";" +
+			                                     "      }" +
+			                                     "  }" +
+			                                     "}";
+
+			Object result = new CompileTest().classCode("Test", classCode)
+			                                 .processor(new BetterStringsProcessor())
+			                                 .compile()
+			                                 .loadClass("Test")
+			                                 .invokeStatic("sum");
+
+			assertThat(result).isEqualTo("sum = ${3+4}");
+		}
 	}
 }
