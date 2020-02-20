@@ -71,7 +71,7 @@ public class InnerStringVarsAstTranslator extends TreeTranslator {
 	private boolean isAnnotatedBySkip(JCTree.JCModifiers modifiers) {
 
 		for (JCTree.JCAnnotation annotation : modifiers.getAnnotations()) {
-			if (annotation.getAnnotationType() == null) {
+			if (annotation.getAnnotationType() == null || annotation.type == null) {
 				continue;
 			}
 			if (annotation.type.toString().equals(DisabledStringInterpolation.class.getCanonicalName())) {
