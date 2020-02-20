@@ -22,7 +22,7 @@ import com.sun.tools.javac.util.Context;
 /**
  * Created on 2019-09-02
  * <p>
- * TODO: replace on the JavaDoc
+ * String interpolation annotation processor
  *
  * @author Korovin Anatoliy
  */

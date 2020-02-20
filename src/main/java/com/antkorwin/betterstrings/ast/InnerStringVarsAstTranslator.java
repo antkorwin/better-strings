@@ -15,7 +15,8 @@ import com.sun.tools.javac.util.Names;
 /**
  * Created on 2019-09-10
  * <p>
- * TODO: replace on the JavaDoc
+ * AST translator to change the code of String literals
+ * on the code of java expressions.
  *
  * @author Korovin Anatoliy
  */
@@ -70,10 +71,10 @@ public class InnerStringVarsAstTranslator extends TreeTranslator {
 	private boolean isAnnotatedBySkip(JCTree.JCModifiers modifiers) {
 
 		for (JCTree.JCAnnotation annotation : modifiers.getAnnotations()) {
-			if (annotation.getAnnotationType() == null) {
+			if (annotation.getAnnotationType() == null || annotation.type == null) {
 				continue;
 			}
-			if (annotation.getAnnotationType().toString().equals(DisabledStringInterpolation.class.getCanonicalName())) {
+			if (annotation.type.toString().equals(DisabledStringInterpolation.class.getCanonicalName())) {
 				return true;
 			}
 		}
