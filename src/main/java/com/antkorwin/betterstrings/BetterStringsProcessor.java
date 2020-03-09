@@ -13,6 +13,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
+import com.antkorwin.betterstrings.ast.BackslashEscapingAstTranslator;
 import com.antkorwin.betterstrings.ast.InnerStringVarsAstTranslator;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
@@ -58,6 +59,7 @@ public class BetterStringsProcessor extends AbstractProcessor {
 				continue;
 			}
 			JCTree tree = (JCTree) trees.getPath(codeElement).getCompilationUnit();
+			new BackslashEscapingAstTranslator(context).translate(tree);
 			new InnerStringVarsAstTranslator(context).translate(tree);
 		}
 
