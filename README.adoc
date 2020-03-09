@@ -98,7 +98,7 @@ You need to add the following dependency:
 <dependency>
     <groupId>com.antkorwin</groupId>
     <artifactId>better-strings</artifactId>
-    <version>0.1</version>
+    <version>0.2</version>
 </dependency>
 ----
 
@@ -136,6 +136,34 @@ the result is : `${a+b}`
 Better Strings is a Java Annotation Processor,
 but it does not process specific annotations, it makes AST modification of your code while javac compiling it.
 
-Keep in mind that this feature should be used carefully.
+NOTE: Keep in mind that this feature should be used carefully.
 You shouldn't write too much code inside string literals
 because it is too difficult to maintain and maybe not obvious for debugging.
+
+If you want to set annotation processors order
+or just set manually processors path,
+you should set the path for `better-strings` too, like this:
+[source, xml]
+----
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.5.1</version> <!-- or newer version -->
+            <configuration>
+                <source>1.8</source> <!-- depending on your project -->
+                <target>1.8</target> <!-- depending on your project -->
+                <annotationProcessorPaths>
+                    <!-- other annotation processors -->
+                    <path>
+                       <groupId>com.antkorwin</groupId>
+                       <artifactId>better-strings</artifactId>
+                       <version>0.2</version>
+                    </path>
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+----
