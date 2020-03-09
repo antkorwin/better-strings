@@ -101,7 +101,7 @@ public class InnerStringVarsAstTranslator extends TreeTranslator {
 
 			List<Token> tokens = tokenizer.split(jcLiteral);
 
-			if (tokens.size() < 1) {
+			if (tokens.isEmpty()) {
 				return;
 			}
 
