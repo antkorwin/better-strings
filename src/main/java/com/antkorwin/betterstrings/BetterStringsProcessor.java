@@ -30,47 +30,50 @@ import com.sun.tools.javac.util.Context;
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class BetterStringsProcessor extends AbstractProcessor {
 
-	private JavacProcessingEnvironment env;
-	private Messager messager;
+    private JavacProcessingEnvironment env;
+    private Messager messager;
 
-	@Override
-	public synchronized void init(ProcessingEnvironment processingEnv) {
-		messager = processingEnv.getMessager();
-		env = (JavacProcessingEnvironment) processingEnv;
-		super.init(processingEnv);
-		printBanner();
-	}
+    @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+        messager = processingEnv.getMessager();
+        env = (JavacProcessingEnvironment) processingEnv;
+        super.init(processingEnv);
+        printBanner();
+    }
 
 
-	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
-		if (roundEnv.processingOver()) {
-			return false;
-		}
+        if (roundEnv.processingOver()) {
+            return false;
+        }
 
-		Context context = env.getContext();
-		Trees trees = Trees.instance(env);
+        Context context = env.getContext();
+        Trees trees = Trees.instance(env);
 
-		for (Element codeElement : roundEnv.getRootElements()) {
+        for (Element codeElement : roundEnv.getRootElements()) {
+            if (!isClassOrEnum(codeElement)) {
+                continue;
+            }
+            JCTree tree = (JCTree) trees.getPath(codeElement).getCompilationUnit();
+            new InnerStringVarsAstTranslator(context).translate(tree);
+        }
 
-			if (codeElement.getKind() != ElementKind.CLASS) {
-				//TODO: check working with enums
-				continue;
-			}
-			JCTree tree = (JCTree) trees.getPath(codeElement).getCompilationUnit();
-			new InnerStringVarsAstTranslator(context).translate(tree);
-		}
+        return false;
+    }
 
-		return false;
-	}
+    private boolean isClassOrEnum(Element codeElement) {
+        return codeElement.getKind() == ElementKind.CLASS ||
+               codeElement.getKind() == ElementKind.ENUM;
+    }
 
-	@Override
-	public SourceVersion getSupportedSourceVersion() {
-		return SourceVersion.latestSupported();
-	}
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latestSupported();
+    }
 
-	private void printBanner() {
-		String banner = "v0.3 String Interpolation Java Plugin, by Anatoliy Korovin";
-		messager.printMessage(Diagnostic.Kind.NOTE, banner);
-	}
+    private void printBanner() {
+        String banner = "v0.3 String Interpolation Java Plugin, by Anatoliy Korovin";
+        messager.printMessage(Diagnostic.Kind.NOTE, banner);
+    }
 }
