@@ -70,12 +70,7 @@ public class BetterStringsProcessor extends AbstractProcessor {
 	}
 
 	private void printBanner() {
-		String banner = "\n" +
-		                "___  ____ ___ ___ ____ ____    ____ ___ ____ _ _  _ ____ ____ \n" +
-		                "|__] |___  |   |  |___ |__/    [__   |  |__/ | |\\ | | __ [__  \n" +
-		                "|__] |___  |   |  |___ |  \\    ___]  |  |  \\ | | \\| |__] ___] \n" +
-		                "   v0.1 String Interpolation Java Plugin, by Anatoliy Korovin  ";
-
+		String banner = "v0.3 String Interpolation Java Plugin, by Anatoliy Korovin";
 		messager.printMessage(Diagnostic.Kind.NOTE, banner);
 	}
 }
