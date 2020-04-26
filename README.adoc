@@ -98,7 +98,7 @@ You need to add the following dependency:
 <dependency>
     <groupId>com.antkorwin</groupId>
     <artifactId>better-strings</artifactId>
-    <version>0.2</version>
+    <version>0.3</version>
 </dependency>
 ----
 
@@ -159,7 +159,7 @@ you should set the path for `better-strings` too, like this:
                     <path>
                        <groupId>com.antkorwin</groupId>
                        <artifactId>better-strings</artifactId>
-                       <version>0.2</version>
+                       <version>0.3</version>
                     </path>
                 </annotationProcessorPaths>
             </configuration>
@@ -167,3 +167,43 @@ you should set the path for `better-strings` too, like this:
     </plugins>
 </build>
 ----
+
+
+## How to use with another annotation processors
+
+If you need to use multiple annotation processors (for example `better-strings` with `lombok` or `mapstruct`)
+and the order of processing is necessary for you then you can set the order in your building tool.
+
+In maven, you should declare dependencies as usually,
+then describe annotation processors in the configuration of the `maven-compiler-plugin`
+in the build section:
+
+[source, xml]
+----
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <version>3.5.1</version>
+    <configuration>
+        <annotationProcessorPaths>
+
+            <!-- first annotation processor -->
+            <path>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </path>
+
+            <!-- second annotation processor -->
+            <path>
+               <groupId>com.antkorwin</groupId>
+               <artifactId>better-strings</artifactId>
+               <version>${better-strings.version}</version>
+            </path>
+
+        </annotationProcessorPaths>
+    </configuration>
+</plugin>
+----
+
+NOTE: The order of annotation processors paths is necessary.
