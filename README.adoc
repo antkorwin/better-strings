@@ -98,7 +98,7 @@ You need to add the following dependency:
 <dependency>
     <groupId>com.antkorwin</groupId>
     <artifactId>better-strings</artifactId>
-    <version>0.2</version>
+    <version>0.3</version>
 </dependency>
 ----
 
@@ -140,30 +140,43 @@ NOTE: Keep in mind that this feature should be used carefully.
 You shouldn't write too much code inside string literals
 because it is too difficult to maintain and maybe not obvious for debugging.
 
-If you want to set annotation processors order
-or just set manually processors path,
-you should set the path for `better-strings` too, like this:
+
+## How to use with other annotation processors
+
+If you need to use multiple annotation processors (for example `better-strings` with `lombok` or `mapstruct`)
+and the order of processing is necessary for you then you can set the order in your building tool.
+
+In maven, you should declare dependencies as usually,
+then describe annotation processors in the configuration of the `maven-compiler-plugin`
+in the build section:
+
 [source, xml]
 ----
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.5.1</version> <!-- or newer version -->
-            <configuration>
-                <source>1.8</source> <!-- depending on your project -->
-                <target>1.8</target> <!-- depending on your project -->
-                <annotationProcessorPaths>
-                    <!-- other annotation processors -->
-                    <path>
-                       <groupId>com.antkorwin</groupId>
-                       <artifactId>better-strings</artifactId>
-                       <version>0.2</version>
-                    </path>
-                </annotationProcessorPaths>
-            </configuration>
-        </plugin>
-    </plugins>
-</build>
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <version>3.5.1</version>
+    <configuration>
+        <annotationProcessorPaths>
+
+            <!-- first annotation processor -->
+            <path>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </path>
+
+            <!-- second annotation processor -->
+            <path>
+               <groupId>com.antkorwin</groupId>
+               <artifactId>better-strings</artifactId>
+               <version>${better-strings.version}</version>
+            </path>
+
+        </annotationProcessorPaths>
+    </configuration>
+</plugin>
 ----
+
+NOTE: The order of annotation processors paths is necessary.
+You should describe the all used APT when you write `annotationProcessorPaths` section.
