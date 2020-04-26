@@ -4,6 +4,7 @@
 
 image:https://travis-ci.com/antkorwin/better-strings.svg?branch=master["Build Status", link="https://travis-ci.com/antkorwin/better-strings"]
 image:https://codecov.io/gh/antkorwin/better-strings/branch/master/graph/badge.svg[link ="https://codecov.io/gh/antkorwin/better-strings"]
+image:https://maven-badges.herokuapp.com/maven-central/com.antkorwin/better-strings/badge.svg[link="https://search.maven.org/search?q=g:com.antkorwin%20AND%20a:better-strings"]
 
 The Java Plugin to use string interpolation for Java (like in Kotlin).
 Supports Java 8, 9, 10, 11, ...
