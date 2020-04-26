@@ -52,9 +52,7 @@ public class BetterStringsProcessor extends AbstractProcessor {
 		Trees trees = Trees.instance(env);
 
 		for (Element codeElement : roundEnv.getRootElements()) {
-
-			if (codeElement.getKind() != ElementKind.CLASS) {
-				//TODO: check working with enums
+			if (!isClassOrEnum(codeElement)) {
 				continue;
 			}
 			JCTree tree = (JCTree) trees.getPath(codeElement).getCompilationUnit();
@@ -62,6 +60,11 @@ public class BetterStringsProcessor extends AbstractProcessor {
 		}
 
 		return false;
+	}
+
+	private boolean isClassOrEnum(Element codeElement) {
+		return codeElement.getKind() == ElementKind.CLASS ||
+		       codeElement.getKind() == ElementKind.ENUM;
 	}
 
 	@Override

@@ -205,4 +205,58 @@ class BetterStringsProcessorTest {
 			assertThat(result).isEqualTo("sum = ${3 + 4}");
 		}
 	}
+
+	@Nested
+	class Enums {
+
+		@Test
+		void useExpression() {
+			@Language("Java") String enumCode = "public enum EnumCode {" +
+			                                    "   FIRST," +
+			                                    "	SECOND;" +
+			                                    "	String getVal() {" +
+			                                    "		return \"enum = ${3 + 4}\";" +
+			                                    "	}" +
+			                                    "}";
+			@Language("Java") String classCode = "public class Test { " +
+			                                     "  public static String test(){ " +
+			                                     "      return EnumCode.FIRST.getVal();" +
+			                                     "  }" +
+			                                     "}";
+
+			Object result = new CompileTest().classCode("Test", classCode)
+			                                 .classCode("EnumCode", enumCode)
+			                                 .processor(new BetterStringsProcessor())
+			                                 .compile()
+			                                 .loadClass("Test")
+			                                 .invokeStatic("test");
+
+			assertThat(result).isEqualTo("enum = 7");
+		}
+
+		@Test
+		void useEnumValue() {
+			@Language("Java") String enumCode = "public enum EnumCode {" +
+			                                    "   FIRST," +
+			                                    "	SECOND;" +
+			                                    "	String getVal() {" +
+			                                    "		return \"${this.name()} = ${3 + 4}\";" +
+			                                    "	}" +
+			                                    "}";
+			@Language("Java") String classCode = "public class Test { " +
+			                                     "  public static String test(){ " +
+			                                     "      return EnumCode.SECOND.getVal();" +
+			                                     "  }" +
+			                                     "}";
+
+			Object result = new CompileTest().classCode("Test", classCode)
+			                                 .classCode("EnumCode", enumCode)
+			                                 .processor(new BetterStringsProcessor())
+			                                 .compile()
+			                                 .loadClass("Test")
+			                                 .invokeStatic("test");
+
+			assertThat(result).isEqualTo("SECOND = 7");
+		}
+	}
 }
