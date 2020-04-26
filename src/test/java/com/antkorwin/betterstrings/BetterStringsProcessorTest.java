@@ -1,5 +1,6 @@
 package com.antkorwin.betterstrings;
 
+
 import com.jupitertools.compiletest.CompileTest;
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Nested;
@@ -259,4 +260,44 @@ class BetterStringsProcessorTest {
 			assertThat(result).isEqualTo("SECOND = 7");
 		}
 	}
+
+	@Nested
+	class IgnoreInAnnotations {
+
+		@Test
+		void inAnnotationStringValue() {
+			@Language("Java") String versionCode = "import java.lang.annotation.Retention;" +
+			                                       "import java.lang.annotation.RetentionPolicy;" +
+			                                       "import java.lang.annotation.Target;" +
+			                                       "import java.lang.annotation.ElementType;" +
+			                                       "\n" +
+			                                       "@Target({ ElementType.TYPE, ElementType.METHOD })\n" +
+			                                       "@Retention(RetentionPolicy.RUNTIME)" +
+			                                       "public @interface Version {" +
+			                                       " String value();" +
+			                                       "}";
+
+			@Language("Java") String classCode = "import java.lang.reflect.Method;" +
+			                                     "\n" +
+			                                     "public class Test { " +
+			                                     "  @Version(\"${1+2}\") " +
+			                                     "  public String test() throws Exception { " +
+			                                     "      Method name = this.getClass().getMethod(\"test\"); " +
+			                                     "      String value = name.getAnnotation(Version.class).value(); " +
+			                                     "      return \"result = \"+value; " +
+			                                     "  } " +
+			                                     "}";
+
+			Object result = new CompileTest().classCode("Test", classCode)
+			                                 .classCode("Version", versionCode)
+			                                 .processor(new BetterStringsProcessor())
+			                                 .compile()
+			                                 .createClass("Test")
+			                                 .invoke("test");
+
+			assertThat(result).isEqualTo("result = ${1+2}");
+		}
+	}
+
+
 }
