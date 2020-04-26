@@ -1,12 +1,9 @@
 package com.antkorwin.betterstrings;
 
 
-import java.lang.reflect.Method;
-
 import com.jupitertools.compiletest.CompileTest;
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
