@@ -28,11 +28,10 @@ public class InnerStringVarsAstTranslator extends TreeTranslator {
 
 	private boolean skip;
 
-
-	public InnerStringVarsAstTranslator(Context context) {
+	public InnerStringVarsAstTranslator(Context context, boolean callToStringExplicitlyInInterpolations) {
 		this.treeMaker = TreeMaker.instance(context);
 		this.tokenizer = new Tokenizer();
-		this.expressionParser = new ExpressionParser(Names.instance(context));
+		this.expressionParser = new ExpressionParser(Names.instance(context), callToStringExplicitlyInInterpolations);
 	}
 
 	@Override
@@ -96,7 +95,6 @@ public class InnerStringVarsAstTranslator extends TreeTranslator {
 		if (skip) {
 			return;
 		}
-
 		if (jcLiteral.getValue() instanceof String) {
 
 			List<Token> tokens = tokenizer.split(jcLiteral);
@@ -114,18 +112,21 @@ public class InnerStringVarsAstTranslator extends TreeTranslator {
 			for (int i = 1; i < tokens.size(); i++) {
 				JCTree.JCExpression exprRight = convertToExpression(tokens.get(i));
 				exprLeft = treeMaker.Binary(JCTree.Tag.PLUS, exprLeft, exprRight);
+				exprLeft.setPos(tokens.get(0).getOffset());
 			}
+
 			result = exprLeft;
 		}
 	}
-
 
 	private JCTree.JCExpression convertToExpression(Token token) {
 		switch (token.getType()) {
 			case EXPRESSION:
 				return expressionParser.parse(token);
 			case STRING_LITERAL:
-				return treeMaker.Literal(token.getValue());
+				JCTree.JCLiteral literal = treeMaker.Literal(token.getValue());
+				literal.setPos(token.getOffset());
+				return literal;
 			default:
 				throw new RuntimeException("Unexpected token type: " + token.getType());
 		}

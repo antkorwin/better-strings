@@ -5,7 +5,7 @@
     <groupId>com.antkorwin</groupId>
     <artifactId>better-strings</artifactId>
     <packaging>jar</packaging>
-    <version>0.3</version>
+    <version>0.4</version>
 
     <!-- region Info -->
     <name>BetterStrings Java Plugin</name>

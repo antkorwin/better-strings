@@ -10,13 +10,14 @@ package com.antkorwin.betterstrings.tokenizer;
  */
 public class Token {
 
-    private String value;
-    private TokenType type;
-    private int offset;
+    private final String value;
+    private final TokenType type;
+    private final int offset;
 
-    public Token(String value, TokenType type) {
+    public Token(String value, TokenType type, int offset) {
         this.value = value;
         this.type = type;
+        this.offset = offset;
     }
 
     public String getValue() {
@@ -29,10 +30,6 @@ public class Token {
 
     public int getOffset() {
         return offset;
-    }
-
-    public void setOffset(int offset) {
-        this.offset = offset;
     }
 
     @Override

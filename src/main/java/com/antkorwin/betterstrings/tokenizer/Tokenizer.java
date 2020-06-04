@@ -19,24 +19,25 @@ public class Tokenizer {
 	private final String TAIL = "}";
 
 	public List<Token> split(JCTree.JCLiteral jcLiteral) {
-		int offset = jcLiteral.getPreferredPosition();
-		List<Token> tokens = split((String) jcLiteral.getValue());
-		for (Token t : tokens) {
-			t.setOffset(offset);
-		}
-		return tokens;
+		String literalValue = (String) jcLiteral.getValue();
+		int originalOffset = jcLiteral.getPreferredPosition();
+		return split(literalValue, originalOffset);
 	}
 
 	public List<Token> split(String literalValue) {
+		return split(literalValue, 0);
+	}
 
+	public List<Token> split(String literalValue, int originalOffset) {
 		List<Token> tokens = new ArrayList<>();
 		int startIndex = 0;
 
 		while (startIndex < literalValue.length()) {
 
 			int headIndex = literalValue.indexOf(HEAD, startIndex);
+			int offset = originalOffset + headIndex + HEAD.length() + 1;
 			if (headIndex < 0) {
-				tokens.add(new Token(literalValue.substring(startIndex), TokenType.STRING_LITERAL));
+				tokens.add(new Token(literalValue.substring(startIndex), TokenType.STRING_LITERAL, offset));
 				break;
 			}
 
@@ -48,12 +49,12 @@ public class Tokenizer {
 
 			String prefix = literalValue.substring(startIndex, headIndex);
 			if (!prefix.equals("")) {
-				tokens.add(new Token(prefix, TokenType.STRING_LITERAL));
+				tokens.add(new Token(prefix, TokenType.STRING_LITERAL, offset));
 			}
 
 			String variable = literalValue.substring(headIndex + HEAD.length(), endIndex);
 			if (!variable.equals("")) {
-				tokens.add(new Token(variable, TokenType.EXPRESSION));
+				tokens.add(new Token(variable, TokenType.EXPRESSION, offset));
 			}
 
 			startIndex = endIndex + TAIL.length();
