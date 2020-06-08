@@ -1,5 +1,6 @@
 package com.antkorwin.betterstrings.ast;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 
@@ -46,7 +47,12 @@ public class ExpressionParser {
 		                                                null,
 		                                                null,
 		                                                Collections.singletonList(new FakeJavaFileWrapper(code)));
-		return ct.parse().iterator().next();
+		try {
+			return ct.parse().iterator().next();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error while parsing expression in the string literal: " + code, e);
+		}
 	}
 
 	private class FakeJavaFileWrapper extends SimpleJavaFileObject {
