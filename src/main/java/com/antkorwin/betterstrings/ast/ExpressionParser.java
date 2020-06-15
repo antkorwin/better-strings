@@ -68,7 +68,6 @@ public class ExpressionParser {
 			} else {
 				this.text = "class Test { Object value = String.valueOf(" + text + "); }";
 			}
-			System.out.println(this.text);
 		}
 
 		@Override

@@ -12,8 +12,6 @@ Supports Java 8, 9, 10, 11, ...
 
 ## Motivation
 
-
-
 In the latest JEPs https://openjdk.java.net/jeps/355, we have the only expectation of the RAW string literals,
 but there is nothing about the string interpolation.
 
@@ -42,7 +40,7 @@ But this code is still sad =(
 
 ## What can we do with the Better Strings plugin?
 
-### Using variables in string literals:
+### Using variables in string literals
 
 [source, java]
 ----
@@ -53,7 +51,7 @@ System.out.println("${a} + ${b} = ${a+b}");
 
 prints:  `3 + 4 = 7`
 
-### Using expressions:
+### Using expressions
 
 [source, java]
 ----
@@ -70,7 +68,7 @@ System.out.println("pow = ${a * a}");
 ----
 prints:  `pow = 9`
 
-### Using functions:
+### Using functions
 
 [source, java]
 ----
@@ -88,6 +86,13 @@ long factorial(int n) {
 }
 ----
 prints:  `fact(5) = 120`
+
+
+### Disclaimer
+
+NOTE: Keep in mind that this feature should be used carefully.
+You shouldn't write too much code inside string literals
+because it is too difficult to maintain and maybe not obvious for debugging.
 
 
 ## Getting started
@@ -132,14 +137,43 @@ System.out.println("${'$'}{a+b}");
 the result is : `${a+b}`
 
 
-## How it works
+## How to control the generated code
 
 Better Strings is a Java Annotation Processor,
 but it does not process specific annotations, it makes AST modification of your code while javac compiling it.
 
-NOTE: Keep in mind that this feature should be used carefully.
-You shouldn't write too much code inside string literals
-because it is too difficult to maintain and maybe not obvious for debugging.
+By default, each `${...}` occurrence translates into an invocation of `String#valueOf`.
+For instance, a string:
+
+[source, java]
+----
+"Result: ${obj}.method() = ${obj.method()}"
+----
+
+will yield:
+
+[source, java]
+----
+"Result: "
+  + String.valueOf(obj)
+  + ".method() = "
+  = String.valueOf(obj.method())
+----
+
+Under certain circumstances (e.g. with certain static code analyzers), however,
+it might be preferred that the generated code contains an explicit `toString` invocation for each `${...}` occurrence containing a non-null value.
+This can be controlled with `-AcallToStringExplicitlyInInterpolations` compiler option, which will instead make the above string translate into:
+
+[source, java]
+----
+"Result: "
+  + (java.util.Objects.nonNull(obj) ? java.util.Objects.requireNonNull(obj).toString() : "null")
+  + ".method() = "
+  + (java.util.Objects.nonNull(obj.method()) ? java.util.Objects.requireNonNull(obj.method()).toString() : "null")
+----
+
+NOTE: this causes the inner part of each `${...}` to be evaluated twice,
+which might be problematic if the expression is side-effecting, non-deterministic or expensive to compute.
 
 
 ## How to use with other annotation processors
