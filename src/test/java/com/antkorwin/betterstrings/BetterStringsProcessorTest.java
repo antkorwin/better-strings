@@ -2,6 +2,8 @@ package com.antkorwin.betterstrings;
 
 
 import com.jupitertools.compiletest.CompileTest;
+import com.jupitertools.compiletest.InstantiatedClass;
+import com.jupitertools.compiletest.LoadedClass;
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 class BetterStringsProcessorTest {
+
+	private static final String CTSEII = "-A" + Options.CALL_TO_STRING_EXPLICITLY_IN_INTERPOLATIONS;
+
+	private LoadedClass loadedTestClass(@Language("Java") String classCode, String... options) {
+		return new CompileTest().classCode("Test", classCode)
+						.processor(new BetterStringsProcessor())
+						.options(options)
+						.compile()
+						.loadClass("Test");
+	}
+
+	private InstantiatedClass instantiatedTestClass(@Language("Java") String classCode, String... options) {
+		return new CompileTest().classCode("Test", classCode)
+						.processor(new BetterStringsProcessor())
+						.options(options)
+						.compile()
+						.createClass("Test");
+	}
 
 	@Test
 	void simple() {
@@ -21,11 +41,11 @@ class BetterStringsProcessorTest {
 		                                     "  }" +
 		                                     "}";
 
-		Object result = new CompileTest().classCode("Test", classCode)
-		                                 .processor(new BetterStringsProcessor())
-		                                 .compile()
-		                                 .loadClass("Test")
-		                                 .invokeStatic("hello");
+		Object result = loadedTestClass(classCode).invokeStatic("hello");
+
+		assertThat(result).isEqualTo("Hey-Ho!");
+
+		result = loadedTestClass(classCode, CTSEII).invokeStatic("hello");
 
 		assertThat(result).isEqualTo("Hey-Ho!");
 	}
@@ -41,11 +61,11 @@ class BetterStringsProcessorTest {
 		                                     "  }" +
 		                                     "}";
 
-		Object result = new CompileTest().classCode("Test", classCode)
-		                                 .processor(new BetterStringsProcessor())
-		                                 .compile()
-		                                 .loadClass("Test")
-		                                 .invokeStatic("sum");
+		Object result = loadedTestClass(classCode).invokeStatic("sum");
+
+		assertThat(result).isEqualTo("3 + 4 = 7");
+
+		result = loadedTestClass(classCode, CTSEII).invokeStatic("sum");
 
 		assertThat(result).isEqualTo("3 + 4 = 7");
 	}
@@ -88,11 +108,11 @@ class BetterStringsProcessorTest {
 			                                     "  }" +
 			                                     "}";
 
-			Object result = new CompileTest().classCode("Test", classCode)
-			                                 .processor(new BetterStringsProcessor())
-			                                 .compile()
-			                                 .createClass("Test")
-			                                 .invoke("getField");
+			Object result = instantiatedTestClass(classCode).invoke("getField");
+
+			assertThat(result).isEqualTo("${3+4}");
+
+			result = instantiatedTestClass(classCode, CTSEII).invoke("getField");
 
 			assertThat(result).isEqualTo("${3+4}");
 		}
@@ -107,11 +127,11 @@ class BetterStringsProcessorTest {
 			                                     "  }" +
 			                                     "}";
 
-			Object result = new CompileTest().classCode("Test", classCode)
-			                                 .processor(new BetterStringsProcessor())
-			                                 .compile()
-			                                 .loadClass("Test")
-			                                 .invokeStatic("hello");
+			Object result = loadedTestClass(classCode).invokeStatic("hello");
+
+			assertThat(result).isEqualTo("Hey-${x}");
+
+			result = loadedTestClass(classCode, CTSEII).invokeStatic("hello");
 
 			assertThat(result).isEqualTo("Hey-${x}");
 		}
@@ -126,11 +146,11 @@ class BetterStringsProcessorTest {
 			                                     "  }" +
 			                                     "}";
 
-			Object result = new CompileTest().classCode("Test", classCode)
-			                                 .processor(new BetterStringsProcessor())
-			                                 .compile()
-			                                 .loadClass("Test")
-			                                 .invokeStatic("hello");
+			Object result = loadedTestClass(classCode).invokeStatic("hello");
+
+			assertThat(result).isEqualTo("Hey-${x}");
+
+			result = loadedTestClass(classCode, CTSEII).invokeStatic("hello");
 
 			assertThat(result).isEqualTo("Hey-${x}");
 		}
@@ -149,11 +169,11 @@ class BetterStringsProcessorTest {
 			                                     "  }" +
 			                                     "}";
 
-			Object result = new CompileTest().classCode("Test", classCode)
-			                                 .processor(new BetterStringsProcessor())
-			                                 .compile()
-			                                 .loadClass("Test")
-			                                 .invokeStatic("sum");
+			Object result = loadedTestClass(classCode).invokeStatic("sum");
+
+			assertThat(result).isEqualTo("sum = ${3+4}");
+
+			result = loadedTestClass(classCode, CTSEII).invokeStatic("sum");
 
 			assertThat(result).isEqualTo("sum = ${3+4}");
 		}
@@ -174,11 +194,11 @@ class BetterStringsProcessorTest {
 			                                     "  }" +
 			                                     "}";
 
-			Object result = new CompileTest().classCode("Test", classCode)
-			                                 .processor(new BetterStringsProcessor())
-			                                 .compile()
-			                                 .loadClass("Test")
-			                                 .invokeStatic("sum");
+			Object result = loadedTestClass(classCode).invokeStatic("sum");
+
+			assertThat(result).isEqualTo("sum = ${3+4}");
+
+			result = loadedTestClass(classCode, CTSEII).invokeStatic("sum");
 
 			assertThat(result).isEqualTo("sum = ${3+4}");
 		}
@@ -197,11 +217,11 @@ class BetterStringsProcessorTest {
 			                                     "  } " +
 			                                     "}";
 
-			Object result = new CompileTest().classCode("Test", classCode)
-			                                 .processor(new BetterStringsProcessor())
-			                                 .compile()
-			                                 .loadClass("Test")
-			                                 .invokeStatic("sum");
+			Object result = loadedTestClass(classCode).invokeStatic("sum");
+
+			assertThat(result).isEqualTo("sum = ${3 + 4}");
+
+			result = loadedTestClass(classCode, CTSEII).invokeStatic("sum");
 
 			assertThat(result).isEqualTo("sum = ${3 + 4}");
 		}

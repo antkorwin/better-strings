@@ -12,7 +12,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
 
 import com.antkorwin.betterstrings.ast.InnerStringVarsAstTranslator;
 import com.sun.source.util.Trees;
@@ -28,7 +27,7 @@ import com.sun.tools.javac.util.Context;
  * @author Korovin Anatoliy
  */
 @SupportedAnnotationTypes("*")
-@SupportedOptions("callToStringExplicitlyInInterpolations")
+@SupportedOptions(Options.CALL_TO_STRING_EXPLICITLY_IN_INTERPOLATIONS)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class BetterStringsProcessor extends AbstractProcessor {
 
@@ -40,7 +39,7 @@ public class BetterStringsProcessor extends AbstractProcessor {
 	public synchronized void init(ProcessingEnvironment processingEnv) {
 		messager = processingEnv.getMessager();
 		env = (JavacProcessingEnvironment) processingEnv;
-		callToStringExplicitlyInInterpolations = env.getOptions().containsKey("callToStringExplicitlyInInterpolations");
+		callToStringExplicitlyInInterpolations = env.getOptions().containsKey(Options.CALL_TO_STRING_EXPLICITLY_IN_INTERPOLATIONS);
 		super.init(processingEnv);
 	}
 

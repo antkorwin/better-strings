@@ -49,7 +49,9 @@ public class ExpressionParser {
 		                                                Collections.singletonList(new FakeJavaFileWrapper(code)));
 		try {
 			return ct.parse().iterator().next();
-		} catch (IOException e) {
+		} catch (Exception e) {
+			// Depending on JDK version, `parse()` either throws or does not throw `IOException`;
+			// to avoid setup-dependent compilation errors, let's just catch Exception here.
 			e.printStackTrace();
 			throw new RuntimeException("Error while parsing expression in the string literal: " + code, e);
 		}
@@ -66,6 +68,7 @@ public class ExpressionParser {
 			} else {
 				this.text = "class Test { Object value = String.valueOf(" + text + "); }";
 			}
+			System.out.println(this.text);
 		}
 
 		@Override
