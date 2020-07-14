@@ -1,9 +1,9 @@
 package com.antkorwin.betterstrings.ast;
 
-
 import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Collections;
+
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
@@ -20,11 +20,12 @@ import com.sun.tools.javac.util.Names;
 public class ExpressionParser {
 
 	private final Names names;
+	private final boolean callToStringExplicitlyInInterpolations;
 
-	public ExpressionParser(Names names) {
+	public ExpressionParser(Names names, boolean callToStringExplicitlyInInterpolations) {
 		this.names = names;
+		this.callToStringExplicitlyInInterpolations = callToStringExplicitlyInInterpolations;
 	}
-
 
 	public JCTree.JCExpression parse(Token token) {
 		CompilationUnitTree tree = getCompilationUnitTree(token.getValue());
@@ -45,24 +46,28 @@ public class ExpressionParser {
 		                                                null,
 		                                                null,
 		                                                null,
-		                                                Arrays.asList(new FakeJavaFileWrapper(code)));
-
+		                                                Collections.singletonList(new FakeJavaFileWrapper(code)));
 		try {
 			return ct.parse().iterator().next();
-		} catch (IOException e) {
+		} catch (Exception e) {
+			// Depending on JDK version, `parse()` either throws or does not throw `IOException`;
+			// to avoid setup-dependent compilation errors, let's just catch Exception here.
 			e.printStackTrace();
 			throw new RuntimeException("Error while parsing expression in the string literal: " + code, e);
 		}
 	}
 
-
 	private class FakeJavaFileWrapper extends SimpleJavaFileObject {
 
-		private String text;
+		private final String text;
 
 		public FakeJavaFileWrapper(String text) {
 			super(URI.create("myfake:/Test.java"), JavaFileObject.Kind.SOURCE);
-			this.text = "class Test { Object value = String.valueOf(" + text + "); }";
+			if (callToStringExplicitlyInInterpolations) {
+				this.text = "class Test { Object value = java.util.Objects.nonNull(" + text + ") ? java.util.Objects.requireNonNull(" + text + ").toString() : \"null\"; }";
+			} else {
+				this.text = "class Test { Object value = String.valueOf(" + text + "); }";
+			}
 		}
 
 		@Override
@@ -74,10 +79,16 @@ public class ExpressionParser {
 
 	private class IdentResolver extends TreeTranslator {
 
-		private int offset;
+		private final int offset;
 
 		public IdentResolver(int offset) {
 			this.offset = offset;
+		}
+
+		@Override
+		public void visitApply(JCTree.JCMethodInvocation jcMethodInvocation) {
+			super.visitApply(jcMethodInvocation);
+			jcMethodInvocation.pos = offset;
 		}
 
 		@Override

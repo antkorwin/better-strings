@@ -5,7 +5,7 @@
     <groupId>com.antkorwin</groupId>
     <artifactId>better-strings</artifactId>
     <packaging>jar</packaging>
-    <version>0.3</version>
+    <version>0.4</version>
 
     <!-- region Info -->
     <name>BetterStrings Java Plugin</name>
@@ -147,7 +147,7 @@
         <dependency>
             <groupId>com.jupiter-tools</groupId>
             <artifactId>compile-test</artifactId>
-            <version>0.1</version>
+            <version>0.2</version>
             <scope>test</scope>
         </dependency>
 

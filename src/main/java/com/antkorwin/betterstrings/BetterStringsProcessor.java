@@ -6,12 +6,12 @@ import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
 
 import com.antkorwin.betterstrings.ast.InnerStringVarsAstTranslator;
 import com.sun.source.util.Trees;
@@ -27,18 +27,20 @@ import com.sun.tools.javac.util.Context;
  * @author Korovin Anatoliy
  */
 @SupportedAnnotationTypes("*")
+@SupportedOptions(Options.CALL_TO_STRING_EXPLICITLY_IN_INTERPOLATIONS)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class BetterStringsProcessor extends AbstractProcessor {
 
 	private JavacProcessingEnvironment env;
 	private Messager messager;
+	private boolean callToStringExplicitlyInInterpolations;
 
 	@Override
 	public synchronized void init(ProcessingEnvironment processingEnv) {
 		messager = processingEnv.getMessager();
 		env = (JavacProcessingEnvironment) processingEnv;
+		callToStringExplicitlyInInterpolations = env.getOptions().containsKey(Options.CALL_TO_STRING_EXPLICITLY_IN_INTERPOLATIONS);
 		super.init(processingEnv);
-		printBanner();
 	}
 
 
@@ -56,7 +58,7 @@ public class BetterStringsProcessor extends AbstractProcessor {
 				continue;
 			}
 			JCTree tree = (JCTree) trees.getPath(codeElement).getCompilationUnit();
-			new InnerStringVarsAstTranslator(context).translate(tree);
+			new InnerStringVarsAstTranslator(context, callToStringExplicitlyInInterpolations).translate(tree);
 		}
 
 		return false;
@@ -70,10 +72,5 @@ public class BetterStringsProcessor extends AbstractProcessor {
 	@Override
 	public SourceVersion getSupportedSourceVersion() {
 		return SourceVersion.latestSupported();
-	}
-
-	private void printBanner() {
-		String banner = "v0.3 String Interpolation Java Plugin, by Anatoliy Korovin";
-		messager.printMessage(Diagnostic.Kind.NOTE, banner);
 	}
 }
