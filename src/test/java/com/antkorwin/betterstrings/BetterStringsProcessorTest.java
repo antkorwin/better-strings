@@ -83,6 +83,19 @@ class BetterStringsProcessorTest {
 		assertThat(result).isEqualTo("password = 1234");
 	}
 
+	@Test
+	void interpolationInFields() {
+		@Language("Java") String classCode = "public class Test { " +
+		                                     "  public String field = \"${3+4}\";" +
+		                                     "  public String getField(){ " +
+		                                     "      return \"${field}\";" +
+		                                     "  }" +
+		                                     "}";
+
+		Object result = instantiatedTestClass(classCode).invoke("getField");
+		assertThat(result).isEqualTo("7");
+	}
+
 	@Nested
 	class DisabledAnnotationTests {
 
@@ -236,6 +249,58 @@ class BetterStringsProcessorTest {
 			                                 .invokeStatic("test");
 
 			assertThat(result).isEqualTo("SECOND = 7");
+		}
+	}
+
+	@Nested
+	class Interfaces {
+
+		@Test
+		void useInDefaultMethod() {
+			@Language("Java") String interfaceCode = "public interface InterfaceWithDefault {" +
+			                                         "   default String sum(){" +
+			                                         "       return \"${1+2}\";" +
+			                                         "   }" +
+			                                         "}";
+			@Language("Java") String classCode = "public class Test implements InterfaceWithDefault {" +
+			                                     "  public String test() {" +
+			                                     "      return sum();" +
+			                                     "  }" +
+			                                     "}";
+
+			Object result = new CompileTest().classCode("Test", classCode)
+			                                 .classCode("InterfaceWithDefault", interfaceCode)
+			                                 .processor(new BetterStringsProcessor())
+			                                 .compile()
+			                                 .createClass("Test")
+			                                 .invoke("test");
+
+			assertThat(result).isEqualTo("3");
+		}
+
+		@Test
+		void useInFields() {
+			@Language("Java") String interfaceCode = "public interface InterfaceWithDefault {" +
+			                                         "   int a = 2;" +
+			                                         "   String b = \"${a*2}\";" +
+			                                         "   default String mul(){" +
+			                                         "      return b;" +
+			                                         "   }" +
+			                                         "}";
+			@Language("Java") String classCode = "public class Test implements InterfaceWithDefault {" +
+			                                     "  public String test() {" +
+			                                     "      return mul();" +
+			                                     "  }" +
+			                                     "}";
+
+			Object result = new CompileTest().classCode("Test", classCode)
+			                                 .classCode("InterfaceWithDefault", interfaceCode)
+			                                 .processor(new BetterStringsProcessor())
+			                                 .compile()
+			                                 .createClass("Test")
+			                                 .invoke("test");
+
+			assertThat(result).isEqualTo("4");
 		}
 	}
 
