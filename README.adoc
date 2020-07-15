@@ -104,7 +104,7 @@ You need to add the following dependency:
 <dependency>
     <groupId>com.antkorwin</groupId>
     <artifactId>better-strings</artifactId>
-    <version>0.3</version>
+    <version>0.4</version>
 </dependency>
 ----
 
