@@ -157,7 +157,7 @@ will yield:
 "Result: "
   + String.valueOf(obj)
   + ".method() = "
-  = String.valueOf(obj.method())
+  + String.valueOf(obj.method())
 ----
 
 Under certain circumstances (e.g. with certain static code analyzers), however,
