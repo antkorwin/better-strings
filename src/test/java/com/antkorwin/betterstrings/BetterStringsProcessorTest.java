@@ -13,22 +13,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class BetterStringsProcessorTest {
 
-	private static final String CTSEII = "-A" + Options.CALL_TO_STRING_EXPLICITLY_IN_INTERPOLATIONS;
-
 	private LoadedClass loadedTestClass(@Language("Java") String classCode, String... options) {
 		return new CompileTest().classCode("Test", classCode)
-						.processor(new BetterStringsProcessor())
-						.options(options)
-						.compile()
-						.loadClass("Test");
+		                        .processor(new BetterStringsProcessor())
+		                        .options(options)
+		                        .compile()
+		                        .loadClass("Test");
 	}
 
 	private InstantiatedClass instantiatedTestClass(@Language("Java") String classCode, String... options) {
 		return new CompileTest().classCode("Test", classCode)
-						.processor(new BetterStringsProcessor())
-						.options(options)
-						.compile()
-						.createClass("Test");
+		                        .processor(new BetterStringsProcessor())
+		                        .options(options)
+		                        .compile()
+		                        .createClass("Test");
 	}
 
 	@Test
@@ -42,11 +40,6 @@ class BetterStringsProcessorTest {
 		                                     "}";
 
 		Object result = loadedTestClass(classCode).invokeStatic("hello");
-
-		assertThat(result).isEqualTo("Hey-Ho!");
-
-		result = loadedTestClass(classCode, CTSEII).invokeStatic("hello");
-
 		assertThat(result).isEqualTo("Hey-Ho!");
 	}
 
@@ -62,11 +55,6 @@ class BetterStringsProcessorTest {
 		                                     "}";
 
 		Object result = loadedTestClass(classCode).invokeStatic("sum");
-
-		assertThat(result).isEqualTo("3 + 4 = 7");
-
-		result = loadedTestClass(classCode, CTSEII).invokeStatic("sum");
-
 		assertThat(result).isEqualTo("3 + 4 = 7");
 	}
 
@@ -109,11 +97,6 @@ class BetterStringsProcessorTest {
 			                                     "}";
 
 			Object result = instantiatedTestClass(classCode).invoke("getField");
-
-			assertThat(result).isEqualTo("${3+4}");
-
-			result = instantiatedTestClass(classCode, CTSEII).invoke("getField");
-
 			assertThat(result).isEqualTo("${3+4}");
 		}
 
@@ -128,11 +111,6 @@ class BetterStringsProcessorTest {
 			                                     "}";
 
 			Object result = loadedTestClass(classCode).invokeStatic("hello");
-
-			assertThat(result).isEqualTo("Hey-${x}");
-
-			result = loadedTestClass(classCode, CTSEII).invokeStatic("hello");
-
 			assertThat(result).isEqualTo("Hey-${x}");
 		}
 
@@ -147,11 +125,6 @@ class BetterStringsProcessorTest {
 			                                     "}";
 
 			Object result = loadedTestClass(classCode).invokeStatic("hello");
-
-			assertThat(result).isEqualTo("Hey-${x}");
-
-			result = loadedTestClass(classCode, CTSEII).invokeStatic("hello");
-
 			assertThat(result).isEqualTo("Hey-${x}");
 		}
 
@@ -170,11 +143,6 @@ class BetterStringsProcessorTest {
 			                                     "}";
 
 			Object result = loadedTestClass(classCode).invokeStatic("sum");
-
-			assertThat(result).isEqualTo("sum = ${3+4}");
-
-			result = loadedTestClass(classCode, CTSEII).invokeStatic("sum");
-
 			assertThat(result).isEqualTo("sum = ${3+4}");
 		}
 
@@ -195,11 +163,6 @@ class BetterStringsProcessorTest {
 			                                     "}";
 
 			Object result = loadedTestClass(classCode).invokeStatic("sum");
-
-			assertThat(result).isEqualTo("sum = ${3+4}");
-
-			result = loadedTestClass(classCode, CTSEII).invokeStatic("sum");
-
 			assertThat(result).isEqualTo("sum = ${3+4}");
 		}
 	}
@@ -218,11 +181,6 @@ class BetterStringsProcessorTest {
 			                                     "}";
 
 			Object result = loadedTestClass(classCode).invokeStatic("sum");
-
-			assertThat(result).isEqualTo("sum = ${3 + 4}");
-
-			result = loadedTestClass(classCode, CTSEII).invokeStatic("sum");
-
 			assertThat(result).isEqualTo("sum = ${3 + 4}");
 		}
 	}
@@ -319,5 +277,54 @@ class BetterStringsProcessorTest {
 		}
 	}
 
+	//TODO: find a way to make a test for specific compiler options as a parametrized test.
+	// Just add an option, before run the tests and check the same result of execution.
+	@Nested
+	class CallToStringExplicitly {
 
+		static final String CTSEII = "-A" + Options.CALL_TO_STRING_EXPLICITLY_IN_INTERPOLATIONS;
+
+		@Test
+		void simple() {
+
+			@Language("Java") String classCode = "public class Test { " +
+			                                     "  public static String hello(){ " +
+			                                     "      String x = \"Ho!\"; " +
+			                                     "      return \"Hey-${x}\";" +
+			                                     "  }" +
+			                                     "}";
+
+			Object result = loadedTestClass(classCode, CTSEII).invokeStatic("hello");
+			assertThat(result).isEqualTo("Hey-Ho!");
+		}
+
+		@Test
+		void evaluateExpression() {
+
+			@Language("Java") String classCode = "public class Test { " +
+			                                     "  public static String sum(){ " +
+			                                     "      int x = 3;" +
+			                                     "      int y = 4;" +
+			                                     "      return \"${x} + ${y} = ${x+y}\";" +
+			                                     "  }" +
+			                                     "}";
+
+			Object result = loadedTestClass(classCode, CTSEII).invokeStatic("sum");
+			assertThat(result).isEqualTo("3 + 4 = 7");
+		}
+
+		@Test
+		void disableInterpolationOnClass() {
+			@Language("Java") String classCode = "@com.antkorwin.betterstrings.DisabledStringInterpolation " +
+			                                     "public class Test { " +
+			                                     "  public static String hello(){ " +
+			                                     "      String x = \"Ho!\"; " +
+			                                     "      return \"Hey-${x}\";" +
+			                                     "  }" +
+			                                     "}";
+
+			Object result = loadedTestClass(classCode, CTSEII).invokeStatic("hello");
+			assertThat(result).isEqualTo("Hey-${x}");
+		}
+	}
 }
