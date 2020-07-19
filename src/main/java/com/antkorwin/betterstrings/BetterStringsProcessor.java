@@ -66,6 +66,7 @@ public class BetterStringsProcessor extends AbstractProcessor {
 
 	private boolean isClassOrEnum(Element codeElement) {
 		return codeElement.getKind() == ElementKind.CLASS ||
+		       codeElement.getKind() == ElementKind.INTERFACE ||
 		       codeElement.getKind() == ElementKind.ENUM;
 	}
 
