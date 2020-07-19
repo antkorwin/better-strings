@@ -159,6 +159,8 @@ You shouldn't write too much code inside string literals because it is too diffi
 
 ## Getting started
 
+### Maven
+
 You need to add the following dependency:
 
 [source,xml]
@@ -166,11 +168,78 @@ You need to add the following dependency:
 <dependency>
     <groupId>com.antkorwin</groupId>
     <artifactId>better-strings</artifactId>
-    <version>0.4</version>
+    <version>0.5</version>
 </dependency>
 ----
 
 And you can use string interpolation anywhere in your code.
+
+NOTE: if you use `maven-compiler-plugin` in your pom file then declare `better-string`
+in the annotation processors configuration section:
+
+[source, xml]
+----
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <version>3.5.1</version>
+    <configuration>
+        <annotationProcessorPaths>
+            <path>
+               <groupId>com.antkorwin</groupId>
+               <artifactId>better-strings</artifactId>
+               <version>${better-strings.version}</version>
+            </path>
+        </annotationProcessorPaths>
+    </configuration>
+</plugin>
+----
+
+You can read more about configuration of multiple annotation processors
+for one project https://github.com/antkorwin/better-strings#6-how-to-use-with-other-annotation-processors[here].
+
+### Gradle
+
+Add the following dependencies in your `build.gradle` file:
+
+[source, gradle]
+----
+compileOnly 'com.antkorwin:better-strings:0.4'
+annotationProcessor 'com.antkorwin:better-strings:0.4'
+----
+
+if you want use string interpolation for tests:
+
+[source]
+----
+testCompileOnly 'com.antkorwin:better-strings:0.4'
+testAnnotationProcessor 'com.antkorwin:better-strings:0.4'
+----
+
+Example of a simple application with gradle build:
+https://github.com/antkorwin/better-strings-demo
+
+### Intellij IDEA
+
+Sometimes you can get into problems with gradle projects in IDEA,
+an internal runner(in IDEA) may not execute our annotation processor.
+
+You can read more about this problem here: https://stackoverflow.com/a/55605950
+
+I suggest to turn on `enable annotation processing`
+
+image::./documentation/enable-annotation-processors.png[enable annotation processing]
+
+And select the `gradle test runner` in the Intellij IDEA settings.
+
+image::./documentation/test-runner.png[gradle test runner]
+
+### Eclipse
+
+Unfortunately, better-string doesn't work with Eclipse.
+Eclipse uses its own java compiler and the annotation processing
+with AST modification isn't work with them out of the box.
+
 
 ## How to turn-off string interpolation
 
