@@ -219,7 +219,7 @@ testAnnotationProcessor 'com.antkorwin:better-strings:0.4'
 Example of a simple application with gradle build:
 https://github.com/antkorwin/better-strings-demo
 
-### Intellij IDEA
+### Intellij IDEA with Gradle
 
 Sometimes you can get into problems with gradle projects in IDEA,
 an internal runner(in IDEA) may not execute our annotation processor.
