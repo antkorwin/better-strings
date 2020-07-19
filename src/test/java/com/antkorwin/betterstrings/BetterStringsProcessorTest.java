@@ -250,6 +250,35 @@ class BetterStringsProcessorTest {
 
 			assertThat(result).isEqualTo("SECOND = 7");
 		}
+
+
+
+		@Test
+		void enumToString() {
+			@Language("Java") String enumCode = "public enum EnumCode {" +
+			                                    "   FIRST," +
+			                                    "	SECOND," +
+			                                    "   THIRD;" +
+			                                    "   @Override" +
+			                                    "   public String toString() {" +
+			                                    "       return \"value: ${this.name()}, order: ${this.ordinal() + 1}\";" +
+			                                    "   }"+
+			                                    "}";
+			@Language("Java") String classCode = "public class Test { " +
+			                                     "  public static String test(){ " +
+			                                     "      return EnumCode.THIRD.toString();" +
+			                                     "  }" +
+			                                     "}";
+
+			Object result = new CompileTest().classCode("Test", classCode)
+			                                 .classCode("EnumCode", enumCode)
+			                                 .processor(new BetterStringsProcessor())
+			                                 .compile()
+			                                 .loadClass("Test")
+			                                 .invokeStatic("test");
+
+			assertThat(result).isEqualTo("value: THIRD, order: 3");
+		}
 	}
 
 	@Nested
