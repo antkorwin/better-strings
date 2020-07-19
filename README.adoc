@@ -145,6 +145,12 @@ public enum EnumCode {
 
 `EnumCode.THIRD.toString();` should print: `value: THIRD, order: 3`
 
+### Limitations
+
+It's impossible to use the string interpolation within annotations value.
+It provides compatibility with spring framework properties injecting by the `@Value` annotation.
+
+
 ### Disclaimer
 
 NOTE: Keep in mind that this feature should be used carefully.
